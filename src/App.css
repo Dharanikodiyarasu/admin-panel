@@ -1,0 +1,15 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-layout {
+  display: flex;
+  flex: 1;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  background: #f3f6fa;
+}
