@@ -1,3 +1,38 @@
+// import { Kafka, Partitioners, Producer } from 'kafkajs';
+
+// const kafka = new Kafka({
+//   clientId: 'employee-app',
+//   brokers: ['localhost:9092'],
+// });
+
+// const producer: Producer = kafka.producer({
+//   createPartitioner: Partitioners.LegacyPartitioner,
+// });
+
+// export async function connectProducer(): Promise<void> {
+//   try {
+//     console.log('Connecting Kafka Producer...');
+//     await producer.connect();
+//     console.log('Kafka Producer connected');
+//   } catch (error) {
+//     console.error('Failed to connect Kafka Producer:', error);
+//   }
+// }
+
+// export async function sendMessage(topic: string, message: any): Promise<void> {
+//   try {
+//     console.log(`Sending message to Kafka topic [${topic}]...`);
+//     await producer.send({
+//       topic,
+//       messages: [{ value: JSON.stringify(message) }],
+//     });
+//     console.log(`Message sent to Kafka topic [${topic}]:`, message);
+//   } catch (error) {
+//     console.error('Failed to send message to Kafka:', error);
+//   }
+// }
+
+
 import { Kafka, Partitioners, Producer } from 'kafkajs';
 
 const kafka = new Kafka({
@@ -9,25 +44,34 @@ const producer: Producer = kafka.producer({
   createPartitioner: Partitioners.LegacyPartitioner,
 });
 
+let isProducerConnected = false;
+
 export async function connectProducer(): Promise<void> {
-  try {
-    console.log('Connecting Kafka Producer...');
-    await producer.connect();
-    console.log('Kafka Producer connected');
-  } catch (error) {
-    console.error('Failed to connect Kafka Producer:', error);
+  if (!isProducerConnected) {
+    try {
+      console.log('🔌 Connecting Kafka Producer...');
+      await producer.connect();
+      isProducerConnected = true;
+      console.log('✅ Kafka Producer connected');
+    } catch (error) {
+      console.error('❌ Failed to connect Kafka Producer:', error);
+    }
   }
 }
 
 export async function sendMessage(topic: string, message: any): Promise<void> {
   try {
-    console.log(`Sending message to Kafka topic [${topic}]...`);
+    if (!isProducerConnected) {
+      await connectProducer(); 
+    }
+    console.log(`📤 Sending message to Kafka topic [${topic}]...`);
     await producer.send({
       topic,
       messages: [{ value: JSON.stringify(message) }],
     });
-    console.log(`Message sent to Kafka topic [${topic}]:`, message);
+    console.log(`✅ Message sent to Kafka topic [${topic}]`, message);
   } catch (error) {
-    console.error('Failed to send message to Kafka:', error);
+    console.error('❌ Failed to send message to Kafka:', error);
   }
 }
+
