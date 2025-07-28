@@ -1,6 +1,4 @@
-/* Login.css */
-
-body,
+/* body,
 html {
   margin: 0;
   padding: 0;
@@ -74,11 +72,6 @@ html {
   transition: background 0.3s;
 }
 
-/* .login-button:hover {
-  background: #2e8bc0;
-} */
-
-
 .form-label {
   display: block;
   text-align: left;
@@ -102,4 +95,111 @@ html {
 
 .register-link:hover {
   color: #005782;
+} */
+
+
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-form {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  padding: 40px 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  z-index: 1;
+}
+
+/* .login-title {
+  margin-bottom: 24px;
+  font-size: 1.8rem;
+  color: #fff;
+} */
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-label {
+  display: block;
+  text-align: left;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.form-input {
+  width: 90%;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.form-input:focus {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.25);
+  outline: none;
+}
+
+.login-button {
+  width: 100%;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.login-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.register-text {
+  margin-top: 20px;
+  color: white;
+  text-align: center;
+  font-size: 14px;
+}
+
+.register-link {
+  color: #90cdf4;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.register-link:hover {
+  color: #fff;
+}
+

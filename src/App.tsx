@@ -1,5 +1,5 @@
 import React, { JSX, useEffect, useState } from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation,HashRouter } from 'react-router-dom';
 import Login from './pages/login/login';
 import GetEmployee from './pages/getEmployee/GetEmployee';
 import Dashboard from './pages/dashboard/Dashboard';
@@ -12,6 +12,7 @@ import Admin from './pages/admin/Admin';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+import ResetPassword from './pages/resetPassword/ResetPassword';
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -51,6 +52,9 @@ const App: React.FC = () => {
             <Route path="/" element={<Navigate to="/login" />} />
             <Route path="/login" element={token ? <Navigate to="/dashboard" /> : <Login />} />
             <Route path="/register" element={<Register />} />
+            {/* ✅ Public route for reset password */}
+            <Route path="/reset-password" element={<ResetPassword />} />
+
             <Route path="/dashboard" element={PrivateRoute(<Dashboard />)} />
             <Route path="/admin" element={AdminRoute(<Admin />)} />
             <Route path="/users" element={AdminRoute(<GetEmployee />)} />

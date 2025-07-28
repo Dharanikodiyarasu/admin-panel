@@ -34,7 +34,6 @@ const Sidebar: React.FC = () => {
       <h3>Admin</h3>
       <NavLink to="/dashboard" className="sidebar-link">Dashboard</NavLink>
       
-      {/* ✅ Show only if role is SUPER ADMIN */}
       {role === 'SUPER ADMIN' && (
         <NavLink to="/admin" className="sidebar-link">Admin</NavLink>
       )}
