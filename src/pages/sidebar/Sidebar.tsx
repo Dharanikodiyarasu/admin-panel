@@ -38,7 +38,7 @@ const Sidebar: React.FC = () => {
         <NavLink to="/admin" className="sidebar-link">Admin</NavLink>
       )}
       <NavLink to="/users" className="sidebar-link">Users</NavLink>
-      <NavLink to="/setting" className="sidebar-link">Settings</NavLink>
+      {/* <NavLink to="/setting" className="sidebar-link">Settings</NavLink> */}
       <NavLink to="#" className="sidebar-link" onClick={handleLogoutClick}>
         Logout
       </NavLink>

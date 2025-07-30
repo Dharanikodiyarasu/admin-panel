@@ -233,9 +233,10 @@ const GetEmployee: React.FC = () => {
                   emp.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
                   emp.phone_no.includes(searchQuery) ||
                   emp.id.toString().includes(searchQuery))
-                .map(emp => (
+                .map((emp, index) => (
                   <tr key={emp.id}>
-                    <td>{emp.id}</td>
+                    {/* <td>{emp.id}</td> */}
+                    <td>{index + 1 + (page - 1) * 10}</td>
                     <td>{emp.user_name}</td>
                     <td>{emp.dob}</td>
                     <td>{emp.email}</td>

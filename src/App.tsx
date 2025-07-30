@@ -1,5 +1,5 @@
 import React, { JSX, useEffect, useState } from 'react';
-import { Routes, Route, Navigate, useLocation,HashRouter } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Login from './pages/login/login';
 import GetEmployee from './pages/getEmployee/GetEmployee';
 import Dashboard from './pages/dashboard/Dashboard';

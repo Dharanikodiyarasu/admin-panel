@@ -126,11 +126,11 @@ const Login: React.FC = () => {
           {isForgotPassword ? 'Send Reset Email' : 'Login'}
         </button>
 
-        {!isForgotPassword && (
+        {/* {!isForgotPassword && (
           <p className="forgot-link" onClick={handleForgotPasswordToggle}>
             Forgot Password?
           </p>
-        )}
+        )} */}
 
         {!isForgotPassword && (
           <p className="register-text">

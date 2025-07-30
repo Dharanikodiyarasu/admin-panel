@@ -1,3 +1,17 @@
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+}
+
+.dashboard {
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+
 .dashboard {
   padding: 32px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
