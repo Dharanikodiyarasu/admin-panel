@@ -16,7 +16,7 @@ interface UserAttributes {
   status?: string;
   roleName?: string;
   created_on?: Date;
-  adminId?: string; // <-- Add this
+  adminId?: string;
 
 }
 

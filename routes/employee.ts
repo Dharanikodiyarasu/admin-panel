@@ -55,8 +55,15 @@ router.get('/get-users', authenticateToken, async (req: Request, res: Response) 
       offset,
       limit: size
     });
+    
+    // res.json({ total: count, data: rows, page, size });
+    const dataWithSerialIds = rows.map((user, index) => ({
+      ...user.toJSON(),
+      serialId: offset + index + 1
+    }));
 
-    res.json({ total: count, data: rows, page, size });
+    res.json({ total: count, data: dataWithSerialIds, page, size });
+
   } catch (e) {
     console.error('Error fetching users:', e);
     res.status(500).json({ message: 'Failed to fetch users' });

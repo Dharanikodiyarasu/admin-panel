@@ -121,13 +121,6 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
     await sendMessage('forgot-password-topic', {
       to: adminEmail,
       subject: 'Password Reset',
-      //   html: `
-      //     <p>Hello ${admin.adminName},</p>
-      //     <p>Click <a href="${resetLink}">here</a> to reset your password.</p>
-      //     <p>This link expires in 15 minutes.</p>
-      //   `,
-      // });
-
       html: `
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #f9f9f9;">
     <h2 style="color: #333;">Hello ${admin.adminName},</h2>
