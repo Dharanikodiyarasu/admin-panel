@@ -1,117 +1,65 @@
-// import express, { Request, Response } from 'express';
-// import jwt from 'jsonwebtoken';
-// import bcrypt from 'bcrypt';
-// import { Admin } from '../models/table';
-
-// const router = express.Router();
-
-// router.post('/login', async (req: Request, res: Response) => {
-//   const { adminEmail, password } = req.body;
-
-//   if (!adminEmail || !password) {
-//     return res.status(400).json({ code: "9999", message: "Missing email or password" });
-//   }
-
-//   try {
-//     const admin = await Admin.findOne({ where: { adminEmail } });
-//     if (!admin) {
-//       return res.status(401).json({ code: "9999", message: "Invalid email or password" });
-//     }
-
-//     const isMatch = await bcrypt.compare(password.trim(), admin.password);
-//     if (!isMatch) {
-//       return res.status(401).json({ code: "9999", message: "Invalid email or password" });
-//     }
-
-//     const token = jwt.sign(
-//       {
-//         adminId: admin.adminId,
-//         role: admin.roleName
-//       },
-//       process.env.SECRET_KEY!,
-//       { expiresIn: '1h' }
-//     );
-
-//     return res.status(200).json({
-//       code: "0000",
-//       message: "Login successful",
-//       token,
-//       role: admin.roleName,
-//       adminId: admin.adminId
-//     });
-
-//   } catch (error) {
-//     console.error('Login error:', error);
-//     res.status(500).json({ code: "9999", message: "Internal server error" });
-//   }
-// });
-
-// export default router;
-
-
-
 import express, { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { Admin } from '../models/table';
+import { User } from '../models/table';
 import { sendMessage } from '../kafka/producer';
-import nodemailer from 'nodemailer';
 
 const router = express.Router();
 
+// ✅ LOGIN
 router.post('/login', async (req: Request, res: Response) => {
-  const { adminEmail, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!adminEmail || !password) {
-    return res.status(400).json({ code: "9999", message: "Missing email or password" });
+  if (!email || !password) {
+    return res.status(400).json({ code: '9999', message: 'Missing email or password' });
   }
 
   try {
-    const admin = await Admin.findOne({ where: { adminEmail } });
-    if (!admin) {
-      return res.status(401).json({ code: "9999", message: "Invalid email or password" });
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ code: '9999', message: 'Invalid email or password' });
     }
 
-    const isMatch = await bcrypt.compare(password.trim(), admin.password);
+    const isMatch = await bcrypt.compare(password.trim(), user.password);
     if (!isMatch) {
-      return res.status(401).json({ code: "9999", message: "Invalid email or password" });
+      return res.status(401).json({ code: '9999', message: 'Invalid email or password' });
     }
 
     const token = jwt.sign(
       {
-        adminId: admin.adminId,
-        role: admin.roleName
+        id: user.id,
+        role: user.roleName,
+        adminId: user.adminId
       },
       process.env.SECRET_KEY!,
       { expiresIn: '1h' }
     );
 
     return res.status(200).json({
-      code: "0000",
-      message: "Login successful",
+      code: '0000',
+      message: 'Login successful',
       token,
-      role: admin.roleName,
-      adminId: admin.adminId
+      role: user.roleName,
+      adminId: user.adminId
     });
-
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ code: "9999", message: "Internal server error" });
+    res.status(500).json({ code: '9999', message: 'Internal server error' });
   }
 });
 
-
+// ✅ FORGOT PASSWORD
 router.post('/forgot-password', async (req: Request, res: Response) => {
-  const { adminEmail } = req.body;
+  const { email } = req.body;
 
   try {
-    const admin = await Admin.findOne({ where: { adminEmail } });
-    if (!admin) {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
       return res.status(404).json({ code: '9999', message: 'Email not found' });
     }
 
     const token = jwt.sign(
-      { adminId: admin.adminId },
+      { id: user.id },
       process.env.SECRET_KEY!,
       { expiresIn: '15m' }
     );
@@ -119,11 +67,11 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
     const resetLink = `http://localhost:3000/reset-password?token=${token}`;
 
     await sendMessage('forgot-password-topic', {
-      to: adminEmail,
+      to: email,
       subject: 'Password Reset',
       html: `
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #f9f9f9;">
-    <h2 style="color: #333;">Hello ${admin.adminName},</h2>
+    <h2 style="color: #333;">Hello ${user.name},</h2>
     <p style="font-size: 16px; color: #555;">
       You requested to reset your password. Please click the button below to proceed.
     </p>
@@ -147,7 +95,7 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
   }
 });
 
-
+// ✅ RESET PASSWORD
 router.post('/reset-password', async (req: Request, res: Response) => {
   const { token, password } = req.body;
 
@@ -156,15 +104,15 @@ router.post('/reset-password', async (req: Request, res: Response) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.SECRET_KEY!) as { adminId: string };
-    const admin = await Admin.findOne({ where: { adminId: decoded.adminId } });
+    const decoded = jwt.verify(token, process.env.SECRET_KEY!) as { id: string };
+    const user = await User.findByPk(decoded.id);
 
-    if (!admin) {
-      return res.status(404).json({ code: '9999', message: 'Admin not found' });
+    if (!user) {
+      return res.status(404).json({ code: '9999', message: 'User not found' });
     }
 
     const hashedPassword = await bcrypt.hash(password.trim(), 10);
-    await admin.update({ password: hashedPassword });
+    await user.update({ password: hashedPassword });
 
     res.status(200).json({ code: '0000', message: 'Password updated successfully' });
   } catch (error) {
@@ -173,6 +121,4 @@ router.post('/reset-password', async (req: Request, res: Response) => {
   }
 });
 
-
 export default router;
-
