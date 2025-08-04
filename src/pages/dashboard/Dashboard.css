@@ -44,7 +44,6 @@ h2 {
   color: #333;
 }
 
-/* Charts row */
 .charts-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

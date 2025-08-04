@@ -1,13 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import '../../styles/global.css';
-// import './GetEmployee.css';
-
 
 interface AdminEntity {
     id: number;
     adminId: number;
-    adminName: string;
-    adminEmail: string;
+    name: string;
+    email: string;
     roleName: string;
 }
 
@@ -49,10 +47,10 @@ const GetAdmin: React.FC = () => {
     }, [page, fetchAdmins]);
 
     const filteredAdmins = admins.filter(admin =>
-        admin.adminName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        admin.adminEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        admin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        admin.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         admin.roleName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        admin.adminId.toString().toLowerCase().includes(searchQuery) ||
+        admin.adminId.toString().includes(searchQuery) ||
         admin.id.toString().includes(searchQuery)
     );
 
@@ -91,8 +89,8 @@ const GetAdmin: React.FC = () => {
                                 <tr key={admin.id}>
                                     <td>{admin.id}</td>
                                     <td>{admin.adminId}</td>
-                                    <td>{admin.adminName}</td>
-                                    <td>{admin.adminEmail}</td>
+                                    <td>{admin.name}</td>
+                                    <td>{admin.email}</td>
                                     <td>{admin.roleName}</td>
                                 </tr>
                             ))}

@@ -4,14 +4,12 @@ import { toast } from 'react-toastify';
 import '../login/login.css';
 import loginBackground from '../../assests/chat.jpg';
 
-
 const Register: React.FC = () => {
-  const [adminEmail, setAdminEmail] = useState('');
-  const [adminName, setAdminName] = useState('');
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-
+  const navigate = useNavigate();
 
   const generate16DigitId = () => {
     return Math.random().toString().slice(2, 18).padEnd(16, '0');
@@ -20,21 +18,21 @@ const Register: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!adminEmail || !password || !adminName) {
+    if (!email || !password || !name) {
       toast.error("All fields are required");
       return;
     }
 
-    const adminId = generate16DigitId();
+    const id = generate16DigitId();
 
     try {
       const response = await fetch('http://localhost:8080/api/register-admin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          adminId,
-          adminName,
-          adminEmail,
+          id,
+          name,
+          email,
           password,
           roleName: 'ADMIN'
         }),
@@ -64,49 +62,30 @@ const Register: React.FC = () => {
         backgroundRepeat: 'no-repeat',
       }}
     >
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          // backgroundColor: 'rgba(0, 0, 0, 0.3)',
-          zIndex: 0,
-        }}
-      />
       <form className="login-form" onSubmit={handleRegister} style={{ zIndex: 1 }}>
         <h2 className="login-title">Registration</h2>
+
         <div className="form-group">
           <label className="form-label">Name</label>
           <input
             type="text"
-            placeholder="Admin Name"
-            value={adminName}
-            onChange={(e) => setAdminName(e.target.value)}
+            placeholder="Enter your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="form-input"
           />
         </div>
+
         <div className="form-group">
           <label className="form-label">Email</label>
           <input
             type="email"
-            placeholder="Admin Email"
-            value={adminEmail}
-            onChange={(e) => setAdminEmail(e.target.value)}
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="form-input"
           />
         </div>
-        {/* <div className="form-group">
-          <label className="form-label">Password</label>
-          <input
-            type="password"
-            placeholder="Admin Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="form-input"
-          />
-        </div> */}
 
         <div className="form-group">
           <label className="form-label">Password</label>
@@ -133,15 +112,8 @@ const Register: React.FC = () => {
             </span>
           </div>
         </div>
+
         <button type="submit" className="login-button">Register</button>
-        {/* <button
-          type="button"
-          className="backlogin"
-          style={{ marginTop: '10px', backgroundColor: '#ccc', color: '#000' }}
-          onClick={() => navigate('/login')}
-        >
-          Back to Login
-        </button> */}
 
         <p className="register-text">
           Already have an account?{' '}
@@ -150,8 +122,7 @@ const Register: React.FC = () => {
           </span>
         </p>
       </form>
-    </div >
-    // </div>
+    </div>
   );
 };
 

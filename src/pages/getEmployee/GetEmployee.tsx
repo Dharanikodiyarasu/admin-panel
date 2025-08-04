@@ -6,14 +6,15 @@ import '../../styles/global.css';
 import editIcon from '../../assests/edit-icon.png';
 import deleteIcon from '../../assests/delete-icon.png';
 
-
 interface DemoEntity {
   id: number;
-  user_name: string;
+  name: string;
   dob: string;
   email: string;
-  phone_no: string;
+  phoneNo: string;
   status: string;
+  roleName: string;
+
 }
 
 const GetEmployee: React.FC = () => {
@@ -31,8 +32,9 @@ const GetEmployee: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteEmployeeId, setDeleteEmployeeId] = useState<number | null>(null);
 
-
   const token = localStorage.getItem('token');
+  const roleName = localStorage.getItem('role');
+
 
   const apiFetch = (url: string, options: RequestInit = {}) => {
     return fetch(`http://localhost:8080/api${url}`, {
@@ -76,10 +78,10 @@ const GetEmployee: React.FC = () => {
   const openEditModal = (emp: DemoEntity) => {
     setEditingEmployee(emp);
     setEditForm({
-      user_name: emp.user_name,
+      name: emp.name,
       dob: emp.dob,
       email: emp.email,
-      phone_no: emp.phone_no
+      phoneNo: emp.phoneNo
     });
     setModalMode('edit');
     setFormErrors({});
@@ -94,12 +96,12 @@ const GetEmployee: React.FC = () => {
 
   const validateForm = () => {
     const errors: Partial<Record<keyof DemoEntity, string>> = {};
-    if (!editForm.user_name) errors.user_name = 'User name is required';
+    if (!editForm.name) errors.name = 'Name is required';
     if (!editForm.dob) errors.dob = 'DOB is required';
     if (!editForm.email) errors.email = 'Email is required';
     else if (!editForm.email.includes('@')) errors.email = 'Invalid email';
-    if (!editForm.phone_no) errors.phone_no = 'Phone number is required';
-    else if (editForm.phone_no.length !== 10) errors.phone_no = 'Phone must be 10 digits';
+    if (!editForm.phoneNo) errors.phoneNo = 'Phone number is required';
+    else if (editForm.phoneNo.length !== 10) errors.phoneNo = 'Phone must be 10 digits';
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -111,10 +113,10 @@ const GetEmployee: React.FC = () => {
       const res = await apiFetch('/save-user', {
         method: 'POST',
         body: JSON.stringify({
-          userName: editForm.user_name,
+          name: editForm.name,
           dob: editForm.dob,
           email: editForm.email,
-          phoneNo: editForm.phone_no,
+          phoneNo: editForm.phoneNo,
           roleName: 'USER'
         })
       });
@@ -141,10 +143,10 @@ const GetEmployee: React.FC = () => {
       const res = await apiFetch(`/update-user/${editingEmployee.id}`, {
         method: 'PUT',
         body: JSON.stringify({
-          userName: editForm.user_name,
+          name: editForm.name,
           dob: editForm.dob,
           email: editForm.email,
-          phoneNo: editForm.phone_no
+          phoneNo: editForm.phoneNo
         })
       });
       const data = await res.json();
@@ -197,14 +199,14 @@ const GetEmployee: React.FC = () => {
     }
   };
 
-
-
   return (
     <div className="dashboard">
       <h2>Admin Panel</h2>
       <div className="content-card">
         <div className="top-bar">
-          <button onClick={openAddModal} className="button">+ Add</button>
+          {roleName !== 'SUPER ADMIN' && (
+            <button onClick={openAddModal} className="button">+ Add</button>
+          )}
           <input
             type="text"
             placeholder="🔍 Search..."
@@ -229,18 +231,17 @@ const GetEmployee: React.FC = () => {
             <tbody>
               {employees
                 .filter(emp =>
-                  emp.user_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                   emp.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                  emp.phone_no.includes(searchQuery) ||
+                  emp.phoneNo.includes(searchQuery) ||
                   emp.id.toString().includes(searchQuery))
                 .map((emp, index) => (
                   <tr key={emp.id}>
-                    {/* <td>{emp.id}</td> */}
                     <td>{index + 1 + (page - 1) * 10}</td>
-                    <td>{emp.user_name}</td>
+                    <td>{emp.name}</td>
                     <td>{emp.dob}</td>
                     <td>{emp.email}</td>
-                    <td>{emp.phone_no}</td>
+                    <td>{emp.phoneNo}</td>
                     <td>
                       <button
                         className={`action-button ${emp.status === 'active' ? 'block-btn' : 'unblock-btn'}`}
@@ -269,8 +270,6 @@ const GetEmployee: React.FC = () => {
                         <img src={deleteIcon} alt="Delete" width="18" height="18" />
                       </button>
                     </td>
-
-
                   </tr>
                 ))}
             </tbody>
@@ -289,14 +288,18 @@ const GetEmployee: React.FC = () => {
             className="modal-form"
             onSubmit={e => { e.preventDefault(); modalMode === 'add' ? saveNewEmployee() : saveEdit(); }}
           >
-            <input type="text" name="user_name" placeholder="User Name" value={editForm.user_name || ''} onChange={handleInputChange} />
-            {formErrors.user_name && <div className="field-error">{formErrors.user_name}</div>}
-            <input type="date" name="dob" value={editForm.dob || ''} onChange={handleInputChange} />
+            <input
+              type="text" name="name" placeholder="Name" value={editForm.name || ''} onChange={handleInputChange} />
+            {formErrors.name && <div className="field-error">{formErrors.name}</div>}
+            <input
+              type="date" name="dob" value={editForm.dob || ''} onChange={handleInputChange} />
             {formErrors.dob && <div className="field-error">{formErrors.dob}</div>}
-            <input type="email" name="email" placeholder="Email" value={editForm.email || ''} onChange={handleInputChange} />
+            <input
+              type="email" name="email" placeholder="Email" value={editForm.email || ''} onChange={handleInputChange} />
             {formErrors.email && <div className="field-error">{formErrors.email}</div>}
-            <input type="text" name="phone_no" placeholder="Phone" value={editForm.phone_no || ''} onChange={handleInputChange} />
-            {formErrors.phone_no && <div className="field-error">{formErrors.phone_no}</div>}
+            <input
+              type="text" name="phoneNo" placeholder="Phone" value={editForm.phoneNo || ''} onChange={handleInputChange} />
+            {formErrors.phoneNo && <div className="field-error">{formErrors.phoneNo}</div>}
             <div className="modal-actions">
               <button type="submit" disabled={loading}>{loading ? 'Saving...' : 'Save'}</button>
               <button type="button" onClick={() => setShowModal(false)}>Cancel</button>
@@ -316,11 +319,8 @@ const GetEmployee: React.FC = () => {
           </div>
         </div>
       )}
-
-
     </div>
   );
 };
 
 export default GetEmployee;
-
