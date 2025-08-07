@@ -2,10 +2,11 @@ import express, { Request, Response } from 'express';
 import { User } from '../models/table';
 import authenticateToken from '../middlewares/auth.middleware';
 import { sendRegistrationMail } from '../mailsend/mailer';
+import { Op } from 'sequelize';
 
 const router = express.Router();
 
-// save-user
+
 router.post('/save-user', authenticateToken, async (req: Request, res: Response) => {
   const { name, email, password, phoneNo, dob, roleName } = req.body;
   const { adminId } = (req as any).user;
@@ -18,7 +19,7 @@ router.post('/save-user', authenticateToken, async (req: Request, res: Response)
     const newUser = await User.create({
       name,
       email,
-      password: password || 'default123',
+      password: password,
       phoneNo,
       dob,
       roleName: roleName || 'USER',
@@ -33,19 +34,59 @@ router.post('/save-user', authenticateToken, async (req: Request, res: Response)
   }
 });
 
-// Get All Users
+
+// router.get('/get-users', authenticateToken, async (req: Request, res: Response) => {
+//   try {
+//     const page = parseInt(req.query.page as string) || 1;
+//     const size = parseInt(req.query.size as string) || 10;
+//     const offset = (page - 1) * size;
+//     const adminId = req.query.adminId as string;
+
+//     const { count, rows } = await User.findAndCountAll({
+//       where: {
+//         [Op.or]: [{ adminId }, { roleName: 'SUPER ADMIN' }],
+//         roleName: 'USER'
+//       },
+//       attributes: ['id', 'name', 'email', 'phoneNo', 'dob', 'status'],
+//       offset,
+//       limit: size
+//     });
+
+//     const dataWithSerialIds = rows.map((user, index) => ({
+//       ...user.toJSON(),
+//       serialId: offset + index + 1
+//     }));
+
+//     res.json({ code: '0000', total: count, data: dataWithSerialIds, page, size });
+//   } catch (e) {
+//     console.error('Error fetching users:', e);
+//     res.status(500).json({ message: 'Failed to fetch users' });
+//   }
+// });
+
+
 router.get('/get-users', authenticateToken, async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const size = parseInt(req.query.size as string) || 10;
     const offset = (page - 1) * size;
-    const { roleName, adminId } = (req as any).user;
 
-    let whereCondition: any = { roleName: 'USER' };
-    if (roleName === 'ADMIN') whereCondition.adminId = adminId;
+    // ✅ Get from JWT payload (not query)
+    const { role, adminId } = (req as any).user;
+    console.log('Logged in user:', { role, adminId });
+
+    // Base filter: only users with role 'USER'
+    const whereClause: any = {
+      roleName: 'USER',
+    };
+
+    // If the logged-in user is not a SUPER ADMIN, filter by their adminId
+    if (role !== 'SUPER ADMIN') {
+      whereClause.adminId = adminId;
+    }
 
     const { count, rows } = await User.findAndCountAll({
-      where: whereCondition,
+      where: whereClause,
       attributes: ['id', 'name', 'email', 'phoneNo', 'dob', 'status'],
       offset,
       limit: size
@@ -63,7 +104,7 @@ router.get('/get-users', authenticateToken, async (req: Request, res: Response) 
   }
 });
 
-// Status update
+
 router.put('/toggle-status/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const user = await User.findOne({ where: { id: req.params.id, roleName: 'USER' } });
@@ -93,7 +134,7 @@ router.put('/update-user/:id', authenticateToken, async (req: Request, res: Resp
   }
 });
 
-// Delete User
+
 router.delete('/delete-user/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const user = await User.findOne({ where: { id: req.params.id, roleName: 'USER' } });
@@ -108,7 +149,7 @@ router.delete('/delete-user/:id', authenticateToken, async (req: Request, res: R
 });
 
 
-// Get Active Users
+
 router.get('/active-users', authenticateToken, async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
@@ -130,7 +171,6 @@ router.get('/active-users', authenticateToken, async (req: Request, res: Respons
 });
 
 
-// register-admin
 router.post('/register-admin', async (req: Request, res: Response) => {
   try {
     const { name, email, password, roleName, phoneNo, dob } = req.body;
@@ -174,11 +214,11 @@ router.post('/register-admin', async (req: Request, res: Response) => {
 
 router.get('/all-admins', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const { role  } = (req as any).user;
+    const { role } = (req as any).user;
 
-    console.log('Authenticated roleName:', role );
+    console.log('Authenticated roleName:', role);
 
-    if (role  !== 'SUPER ADMIN') {
+    if (role !== 'SUPER ADMIN') {
       return res.status(403).json({ code: '9999', message: 'Access denied' });
     }
 

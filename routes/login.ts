@@ -6,7 +6,7 @@ import { sendMessage } from '../kafka/producer';
 
 const router = express.Router();
 
-// ✅ LOGIN
+
 router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
@@ -35,20 +35,25 @@ router.post('/login', async (req: Request, res: Response) => {
       { expiresIn: '1h' }
     );
 
+    console.log("Admin Name--->", user.name);
+
+
     return res.status(200).json({
       code: '0000',
       message: 'Login successful',
       token,
       role: user.roleName,
-      adminId: user.adminId
+      adminId: user.adminId,
+      name: user.name
     });
+
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ code: '9999', message: 'Internal server error' });
   }
 });
 
-// ✅ FORGOT PASSWORD
+
 router.post('/forgot-password', async (req: Request, res: Response) => {
   const { email } = req.body;
 
@@ -64,7 +69,9 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
       { expiresIn: '15m' }
     );
 
-    const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+    // const resetLink = `http://localhost:3000/users#/reset-password`;
+    const resetLink = `http://localhost:3000/users#/reset-password?token=${token}`;
+
 
     await sendMessage('forgot-password-topic', {
       to: email,
@@ -84,9 +91,12 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
       This link will expire in <strong>15 minutes</strong>. If you didn’t request this, you can safely ignore this email.
     </p>
     <p style="font-size: 14px; color: #aaa;">— The Team</p>
-  </div>
-`
+  </div>`
+
     });
+
+    console.log("resetLink--->", resetLink)
+
 
     res.status(200).json({ code: '0000', message: 'Reset email sent successfully' });
   } catch (error) {
@@ -95,7 +105,32 @@ router.post('/forgot-password', async (req: Request, res: Response) => {
   }
 });
 
-// ✅ RESET PASSWORD
+// router.post('/reset-password', async (req: Request, res: Response) => {
+//   const { token, password } = req.body;
+
+//   if (!token || !password) {
+//     return res.status(400).json({ code: '9999', message: 'Missing token or password' });
+//   }
+
+//   try {
+//     const decoded = jwt.verify(token, process.env.SECRET_KEY!) as { id: string };
+//     const user = await User.findByPk(decoded.id);
+
+//     if (!user) {
+//       return res.status(404).json({ code: '9999', message: 'User not found' });
+//     }
+
+//     const hashedPassword = await bcrypt.hash(password.trim(), 10);
+//     await user.update({ password: hashedPassword });
+
+//     res.status(200).json({ code: '0000', message: 'Password updated successfully' });
+//   } catch (error) {
+//     console.error('Reset password error:', error);
+//     res.status(500).json({ code: '9999', message: 'Invalid or expired token' });
+//   }
+// });
+
+
 router.post('/reset-password', async (req: Request, res: Response) => {
   const { token, password } = req.body;
 
@@ -110,9 +145,8 @@ router.post('/reset-password', async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({ code: '9999', message: 'User not found' });
     }
-
-    const hashedPassword = await bcrypt.hash(password.trim(), 10);
-    await user.update({ password: hashedPassword });
+    user.password = password.trim();
+    await user.save();
 
     res.status(200).json({ code: '0000', message: 'Password updated successfully' });
   } catch (error) {
@@ -120,5 +154,6 @@ router.post('/reset-password', async (req: Request, res: Response) => {
     res.status(500).json({ code: '9999', message: 'Invalid or expired token' });
   }
 });
+
 
 export default router;

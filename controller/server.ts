@@ -9,8 +9,8 @@ import sequelize from '../db/db.config';
 import authRoutes from '../routes/login';
 import userRoutes from '../routes/employee';
 import dashboardRoutes from '../routes/dashboard';
-// import runForgotPasswordConsumer from '../kafka/forgotPasswordConsumer';
-// import { connectProducer } from '../kafka/producer';
+import runForgotPasswordConsumer from '../kafka/forgotPasswordConsumer';
+import { connectProducer } from '../kafka/producer';
 
 const app: Application = express();
 const PORT: number = parseInt(process.env.PORT || '8080', 10);
@@ -24,8 +24,8 @@ const PORT: number = parseInt(process.env.PORT || '8080', 10);
   }
 })();
 
-// runForgotPasswordConsumer().catch(console.error);
-// connectProducer().catch(console.error);
+runForgotPasswordConsumer().catch(console.error);
+connectProducer().catch(console.error);
 
 app.use(cors());
 app.use(bodyParser.json());

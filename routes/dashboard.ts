@@ -7,10 +7,14 @@ const router = express.Router();
 
 router.get('/user-count', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const { roleName, adminId } = (req as any).user;
+    const { role, adminId } = (req as any).user;
 
-    const baseCondition: any = { roleName: 'USER' };
-    if (roleName === 'ADMIN') baseCondition.adminId = adminId;
+    let baseCondition: any = { roleName: 'USER' };
+
+    // If not SUPER ADMIN, filter by adminId
+    if (role !== 'SUPER ADMIN') {
+      baseCondition.adminId = adminId;
+    }
 
     const active = await User.count({
       where: { ...baseCondition, status: 'active' },
@@ -25,7 +29,9 @@ router.get('/user-count', authenticateToken, async (req: Request, res: Response)
     });
 
     const admin = await User.count({
-      where: { ...baseCondition, roleName: 'ADMIN' },
+      where: role === 'SUPER ADMIN'
+        ? { roleName: 'ADMIN' }
+        : { roleName: 'ADMIN', adminId },
     });
 
     res.json({ code: '0000', active, blocked, total, admin });
@@ -34,5 +40,7 @@ router.get('/user-count', authenticateToken, async (req: Request, res: Response)
     res.status(500).json({ code: '9999', message: 'Failed to get user count' });
   }
 });
+
+
 
 export default router;
