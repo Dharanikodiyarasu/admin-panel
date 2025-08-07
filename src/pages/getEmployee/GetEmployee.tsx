@@ -49,13 +49,15 @@ const GetEmployee: React.FC = () => {
 
   const fetchEmployees = async (pageNum: number = 1) => {
     try {
-      const res = await apiFetch(`/get-users?page=${pageNum}&size=10`);
+        const adminId =localStorage.getItem('adminId');
+      const res = await apiFetch(`/get-users?page=${pageNum}&size=10&adminId=${adminId}`);
       const result = await res.json();
       const dataArray: DemoEntity[] = Array.isArray(result.data) ? result.data : [];
       setEmployees(dataArray);
-
+ 
       const total = typeof result.total === 'number' ? result.total : dataArray.length;
       const size = typeof result.size === 'number' ? result.size : 10;
+   
       setTotalPages(Math.max(1, Math.ceil(total / size)));
       setError(null);
     } catch (e: any) {

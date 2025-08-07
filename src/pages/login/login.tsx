@@ -46,7 +46,8 @@ const Login: React.FC = () => {
           localStorage.setItem('token', data.token);
           localStorage.setItem('role', data.role);
           localStorage.setItem('adminId', data.adminId);
-          
+          localStorage.setItem('name', data.name);
+
           window.dispatchEvent(new Event('storage'));
           toast.success('Login successful!');
           navigate('/dashboard');
@@ -127,11 +128,11 @@ const Login: React.FC = () => {
           {isForgotPassword ? 'Send Reset Email' : 'Login'}
         </button>
 
-        {/* {!isForgotPassword && (
+        {!isForgotPassword && (
           <p className="forgot-link" onClick={handleForgotPasswordToggle}>
             Forgot Password?
           </p>
-        )} */}
+        )}
 
         {!isForgotPassword && (
           <p className="register-text">

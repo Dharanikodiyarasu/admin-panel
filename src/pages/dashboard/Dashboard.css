@@ -54,3 +54,19 @@ h2 {
   text-align: center;
   width: 50%;
 }
+
+
+.dashboard-header h4 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+}
+
+.username {
+  font-weight: bold;
+  color: #222;
+}
+
+
+

@@ -98,7 +98,7 @@ const ResetPassword: React.FC = () => {
         )}
       </div>
 
-      <button onClick={handleReset}>Reset Password</button>
+      <button className= "button-reset" onClick={handleReset}>Reset Password</button>
     </div>
   );
 };

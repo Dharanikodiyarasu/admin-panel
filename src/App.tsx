@@ -13,6 +13,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import ResetPassword from './pages/resetPassword/ResetPassword';
+import ForgotPassword from './pages/forgotPassword/ForgotPassword';
+
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -52,17 +54,17 @@ const App: React.FC = () => {
             <Route path="/" element={<Navigate to="/login" />} />
             <Route path="/login" element={token ? <Navigate to="/dashboard" /> : <Login />} />
             <Route path="/register" element={<Register />} />
-            {/* ✅ Public route for reset password */}
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
 
             <Route path="/dashboard" element={PrivateRoute(<Dashboard />)} />
             <Route path="/admin" element={AdminRoute(<Admin />)} />
             <Route path="/users" element={AdminRoute(<GetEmployee />)} />
             <Route path="/setting" element={AdminRoute(<Settings />)} />
-            <Route path="*" element={<Navigate to="/login" />} />
+            {/* <Route path="*" element={<Navigate to="/login" />} /> */}
           </Routes>
         </div>
-      </div>
+      </div> 
 
       <ToastContainer
         position="top-right"

@@ -33,15 +33,13 @@ const ForgotPassword: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
             />
-            <button onClick={handleForgotPassword}>Send Reset Mail</button>
-            <button
-                type="button"
-                className="backlogin"
-                style={{ marginTop: '10px', backgroundColor: '#ccc', color: '#000' }}
-                onClick={() => navigate('/login')}
-            >
+            <button  onClick={handleForgotPassword}>Send Reset Mail</button>
+           
+            
+            <button type="button" className="backlogin" onClick={() => navigate('/login')}>
                 Back to Login
             </button>
+            
             <p>{message}</p>
         </div>
     );

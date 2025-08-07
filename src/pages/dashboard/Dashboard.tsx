@@ -15,27 +15,33 @@ export interface DemoEntity {
 }
 
 const Dashboard: React.FC = () => {
-  const [usersData, setUsersData] = useState([
-    { name: 'Active', users: 0, color: '#28a745' },
-    { name: 'Blocked', users: 0, color: '#dc3545' },
-    { name: 'Total', users: 0, color: '#005782' },
-    { name: 'Admin', users: 0, color: '#c0bc0bff' },
+  const [usersData, setUsersData] = useState<any[]>([]);
+  const [role, setRole] = useState<string>('');
+  const [name, setName] = useState<string>('');
 
-  ]);
 
   useEffect(() => {
+    const userRole = localStorage.getItem('role');
+    const userName = localStorage.getItem('name');
+    setRole(userRole || '');
+    setName(userName || '');
+
     const fetchCounts = async () => {
       try {
         const res = await apiFetch('/user-count');
         const data = await res.json();
         if (data.code === '0000') {
-          setUsersData([
+          const updatedData = [
             { name: 'Active', users: data.active, color: '#28a745' },
             { name: 'Blocked', users: data.blocked, color: '#dc3545' },
-            { name: 'Total', users: data.total, color: '#005782' },
-            { name: 'Admin', users: data.admin, color: '#c0bc0bff' },
+            { name: 'Total', users: data.total, color: '#005782' }
+          ];
 
-          ]);
+          if (userRole === 'SUPER ADMIN') {
+            updatedData.push({ name: 'Admin', users: data.admin, color: '#c0bc0bff' });
+          }
+
+          setUsersData(updatedData);
         } else {
           console.error('Failed to fetch user count:', data.message);
         }
@@ -43,11 +49,16 @@ const Dashboard: React.FC = () => {
         console.error("Error fetching counts:", error);
       }
     };
+
     fetchCounts();
   }, []);
 
   return (
     <div className="dashboard">
+      <div className="dashboard-header">
+        <h4>👋 Welcome, <span className="username">{name}</span></h4>
+      </div>
+
       <h2>Dashboard</h2>
       <div className="summary-cards">
         {usersData.map((item) => (
