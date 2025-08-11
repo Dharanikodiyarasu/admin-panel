@@ -2,7 +2,6 @@ import express, { Request, Response } from 'express';
 import { User } from '../models/table';
 import authenticateToken from '../middlewares/auth.middleware';
 import { sendRegistrationMail } from '../mailsend/mailer';
-import { Op } from 'sequelize';
 
 const router = express.Router();
 
@@ -119,7 +118,7 @@ router.put('/toggle-status/:id', authenticateToken, async (req: Request, res: Re
   }
 });
 
-// Update User
+
 router.put('/update-user/:id', authenticateToken, async (req: Request, res: Response) => {
   const { name, dob, email, phoneNo } = req.body;
 
@@ -230,8 +229,6 @@ router.get('/all-admins', authenticateToken, async (req: Request, res: Response)
     res.status(500).json({ code: '9999', message: 'Failed to fetch admins' });
   }
 });
-
-
 
 
 
