@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import './login.css';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import loginBackground from '../../assests/chat.jpg';
+// import loginBackground from '../../assets/chat.jpg';
+
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -74,7 +75,7 @@ const Login: React.FC = () => {
     <div
       className="login-container"
       style={{
-        backgroundImage: `url(${loginBackground})`,
+        backgroundImage: "url('/chat.jpg')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',

@@ -70,6 +70,7 @@ const Sidebar: React.FC = () => {
       )}
 
       <NavLink to="/users" className="sidebar-link">Users</NavLink>
+        <NavLink to="/setting" className="sidebar-link">Chat</NavLink>
 
       <NavLink to="#" className="sidebar-link" onClick={handleLogoutClick}>
         Logout

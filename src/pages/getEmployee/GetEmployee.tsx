@@ -203,7 +203,7 @@ const GetEmployee: React.FC = () => {
 
   return (
     <div className="dashboard">
-      <h2>Admin Panel</h2>
+      <h2>Users</h2>
       <div className="content-card">
         <div className="top-bar">
           {roleName !== 'SUPER ADMIN' && (
